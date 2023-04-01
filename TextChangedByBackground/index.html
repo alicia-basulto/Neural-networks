@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Color Picker</title>
+    <style type="text/css">
+        #sitio {
+            padding: 5rem;
+            font-size: 5rem;
+            margin-left: 15rem;
+
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://unpkg.com/brain.js"></script>
+    <script src="jscolor.js"></script>
+    <input value="#cc66ff" class="jscolor {onInput:'update(this)'}">
+    <div id="sitio">
+        Web
+    </div>
+    <script type="text/javascript">
+        //Inicializar red neuronal
+        var neuronalNetwork = new brain.NeuralNetwork();
+        //Entrenarla, texto blanco o negro según el fondo
+        neuronalNetwork.train([
+            //fondo negro (entrada en 0s) =  texto blanco (salida 1)
+            { input: { rojo: 0, verde: 0, azul: 0 }, output: { color: 1 } },
+            //fondo blanco (entrada en 1s) =  texto negro (salida 0)
+            { input: { rojo: 1, verde: 1, azul: 1 }, output: { color: 0 } },
+             //fondo verde (entrada en 010s) =  texto negro (salida 0)
+            { input: { rojo: 0, verde: 1, azul: 0 }, output: { color: 0 } }
+        ]);
+
+        function update(color) {
+            var div = document.getElementById("sitio");
+            div.style.backgroundColor = color.toHEXAString();
+            let rgbString = color.toRGBString();
+            let rgbValues = rgbString.match(/\d+/g);
+            let red = rgbValues[0];
+            let green = rgbValues[1];
+            let blue = rgbValues[2];
+           var entrada = {
+                rojo: red/255,
+                verde: green/255,
+                azul: blue/255
+            }
+            var result = neuronalNetwork.run(entrada);
+            console.log(result);
+            if(result.color > .5){
+                div.style.color ="white";
+            }else{
+                div.style.color ="black";
+            }
+        }
+    </script>
+</body>
+
+</html>
